@@ -1,0 +1,18 @@
+{% load static %}
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="{% static 'starwars_explorer/style.css' %}">
+</head>
+<body>
+<div class="explorer_header header_box">
+<div><h1>Star Wars Explorer</h1></div>
+<div><a href="{% url 'starwars_explorer:index' %}">Collections</a></div>
+</div>
+<div class="explorer_content">
+{% block content %}{% endblock %}
+</div>
+</body>

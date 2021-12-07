@@ -1,0 +1,76 @@
+{% extends "starwars_explorer/base.html" %}
+{% block content %}
+<form id="fetch-data-form" method="post">
+{% csrf_token %}
+ <div class="header_box">
+    <div>
+        <h2>Collections</h2>
+    </div>
+    <div>
+        <input type="submit" class="button" value="Fetch" id="fetchbutton">
+    </div> 
+ </div>
+</form>
+
+
+{% if collection_list %}
+    <ul id="collection_ul">
+    {% for collection in collection_list %}
+        <li><a href="{% url 'starwars_explorer:collection_view' collection.id %}">{{ collection.date }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No collections fetched.</p>
+{% endif %}
+
+
+{% block javascript %}
+<script>
+ // helper functions
+ 
+ // todo: finding a more elegant way to use reverse urls in ajax
+ function generate_collection_url(id){
+    return '"{% url 'starwars_explorer:collection_view' 123 %}"'.replace(123, id);
+}
+ function format_to_django_template_dt(input_str){
+    return {{ input_str|date:'Y-m-d H:i' }}
+ }
+</script>
+<script>
+    $(document).ready(function () {
+        $("#fetch-data-form").submit(function (e) {
+            // preventing from page reload and default actions
+            e.preventDefault();
+            // disable fetch button while ajax call is running
+            $("#fetchbutton").attr("disabled", true);
+            // make POST ajax call
+            $.ajax({
+                type: 'POST',
+                url: "{% url 'starwars_explorer:fetch_data' %}",
+                data: { 'csrfmiddlewaretoken': '{{ csrf_token }}' },
+                success: function (response) {
+                    // on successfull creating object
+                    var fields = response["instance"];
+
+                    // todo: either use an uniform date format or find a way how to convert it in ajax to the default setting
+                    //var dateField = new Date(fields["date"]).toLocaleDateTimeString();
+                    var id = response["pk"]
+                    var collectionUrl = generate_collection_url(id);
+                    $("#collection_ul").prepend(
+                        `<li><a href=${collectionUrl}>${fields["date"]}</a></li>`
+                    );
+                    alert("Fetch completed!");
+                    $("#fetchbutton").attr("disabled", false);
+           
+                },
+                error: function (response) {
+                    // alert the error if any error occured
+                    alert(response["responseJSON"]["error"]);
+                    $("#fetchbutton").attr("disabled", false);
+                }
+            })
+        })
+    })
+</script>
+{% endblock javascript %}
+{% endblock content %}

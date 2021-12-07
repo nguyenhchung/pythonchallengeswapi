@@ -1,0 +1,104 @@
+body {
+    font: normal 10px Verdana, Arial, sans-serif;
+}
+
+a.disabled {
+  pointer-events: none;
+  cursor: default;
+  opacity: .4;
+  color: grey;
+}
+div.header_box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+div.explorer_header {
+  background-color: #ffc107;
+  padding: 1px 20px;
+}
+div.explorer_content {
+  padding: 1px 20px;
+}
+
+.button {
+    border: none;
+    padding: 5px 5px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    border-radius: 5px;
+}
+#fetchbutton {
+    background-color: #4CAF50;
+    color: white;
+}
+#fetchbutton:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+}
+
+table {
+    border-collapse: collapse;
+    margin: 25px 0;
+    font-size: 0.9em;
+    font-family: sans-serif;
+    min-width: 400px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+}
+
+table thead tr {
+    background-color: #bcbfc0;
+    color: #ffffff;
+    text-align: left;
+}
+
+th,td {
+    padding: 12px 15px;
+}
+
+tbody tr {
+    border-bottom: 1px solid #dddddd;
+}
+
+tbody tr:nth-of-type(even) {
+    background-color: #f2f2f2;
+}
+
+.selected {
+    background-color: lightblue;
+}
+
+ul {
+  list-style-type: none;
+  padding: 10px;
+}
+ 
+li {
+  padding: 5px;
+  font: 100 10px/1.5 Verdana, Arial, sans-serif;
+  border-bottom: 1px solid #ccc;
+}
+ 
+li:last-child {
+  border: none;
+}
+ 
+li a {
+  text-decoration: none;
+  color: #000;
+  display: block;
+  width: 200px;
+ 
+  -webkit-transition: font-size 0.3s ease, background-color 0.3s ease;
+  -moz-transition: font-size 0.3s ease, background-color 0.3s ease;
+  -o-transition: font-size 0.3s ease, background-color 0.3s ease;
+  -ms-transition: font-size 0.3s ease, background-color 0.3s ease;
+  transition: font-size 0.3s ease, background-color 0.3s ease;
+}
+ 
+li a:hover {
+  font-size: 15px;
+  background: #f6f6f6;
+}

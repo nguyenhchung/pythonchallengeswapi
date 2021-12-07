@@ -1,0 +1,49 @@
+{% extends "starwars_explorer/base.html" %}
+{% block content %}
+{% if collection %}
+<h2><a href="{% url 'starwars_explorer:collection_view' collection.id %}">{{ collection.filename }}</a></h2> 
+    <table>
+    <thead>
+    <tr>
+        {% for advanced_header_field in advanced_header_fields %}
+            <th {% if advanced_header_field.selected %}class="selected"{%endif%}><a href="{% url 'starwars_explorer:collection_count_view' collection.id %}?fields={{ advanced_header_field.targets }}" 
+                    {% if advanced_header_field.disabled %}class="disabled"{%endif%} 
+                    >{{ advanced_header_field.name }}</a>
+            
+            </th>
+        {% endfor %}
+    </tr>
+    </thead>
+    <tbody>
+    </tbody>
+    
+    </table>
+    <table>
+    <thead>
+    <tr>
+        {% for count_field in count_fields %}
+            <th>{{ count_field }}</th>
+        {% endfor %}
+        <th>count</th>
+    </tr>
+    </thead>
+    <tbody>
+        {% for key, value in count_dict.items %}
+        <tr>
+            {% if is_last_count_field %}
+                <td>{{ key }}</td>
+            {% else %}
+                {% for key_value in key %}
+                    <td>{{ key_value }}</td>
+                {% endfor %}
+            {% endif %}
+            <td>{{ value }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+    </table>
+
+{% else %}
+    <p>No collection found.</p>
+{% endif %}
+{% endblock content %}
