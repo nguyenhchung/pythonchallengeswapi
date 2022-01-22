@@ -17,7 +17,7 @@ class SWAPIResponse:
     next_page_token = None
     
     def __init__(self, start_response):
-        process(start_response)
+        add(start_response)
         
     def add(self, api_response)
         self.total_count = api_response.get('count', None)
