@@ -25,59 +25,76 @@ def dt_to_django_template_dt(input_dt):
 def retrieve_homeworld(input_url):
     # todo: include in SWAPIhandler and enable direct url inputs
     return requests.get(input_url).json()['name']
+    
+def transform_homeworld_field(homeworld_url, homeworld_dict={}):
+    # retrieve homeworld from local dict to avoid multiple same api calls
+    if homeworld_url not in homeworld_dict:
+        homeworld_dict[homeworld_url] = retrieve_homeworld(homeworld_url)
+    return homeworld_dict[homeworld_url]
+    
+def transform_swapi_row(input_row, homeworld_dict={}):
+    transformed_row = input_row
+    transformed_row['date'] = iso8601_str_to_date(input_row['edited'])
+    transformed_row['homeworld'] = transform_homeworld_field(input_row['homeworld'], homeworld_dict)
         
+    for key_to_drop in swapi_keys_to_drop:
+        transformed_row.pop(key_to_drop)
+    
+    return transformed_row
+    
 def transform_swapi_results(input_list):
     homeworld_dict = {}
     transformed_list = []
      
     for input_row in input_list:
-        transformed_row = input_row
-        transformed_row['date'] = iso8601_str_to_date(input_row['edited'])
-        
-        # retrieve homeworld from local dict to avoid multiple same api calls
-        current_homeworld_url = input_row['homeworld']
-        if current_homeworld_url not in homeworld_dict:
-            homeworld_dict[current_homeworld_url] = retrieve_homeworld(current_homeworld_url)
-        transformed_row['homeworld'] = homeworld_dict[current_homeworld_url]
-        
-        for key_to_drop in SWAPI_KEYS_TO_DROP:
-            transformed_row.pop(key_to_drop)
+        transformed_row = transform_swapi_row(input_row, homeworld_dict)
         transformed_list.append(transformed_row)
     return transformed_list
+
+def get_keys_from_dict(input_dict):
+    return list(input_dict.keys())
 
 def write_list_to_csv_file(input_list, filename):
     if input_list and len(input_list) > 0:
         with open(filename, 'w', newline='') as csvfile:
-            first_row = input_list[0]
-            fieldnames = list(first_row.keys())
+            fieldnames = get_keys_from_dict(input_list[0])
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-            
             writer.writeheader()
             for input_row in input_list:
                 writer.writerow(input_row)
 
 
-def fetch_swapi():
-    total_count, swapi_results = SWAPIPeopleEndpoint().get_total_list()
-    
-    transformed_list = transform_swapi_results(swapi_results)
-    
-    file_uuid = str(uuid.uuid4()) 
-    file_name = file_uuid + '.csv'
-    
-    write_list_to_csv_file(transformed_list, file_name)
-    
+def generate_file_name():
+    return str(uuid.uuid4()) + '.csv'
+
+def save_collection(file_name, total_count):
     new_collection = Collection(filename = file_name,
                                 date=timezone.now(),
                                 total_count=total_count)
     new_collection.save()
+    return new_collection
+    
+def fetch_transformed_swapi_list():
+    total_count, swapi_results = SWAPIPeopleEndpoint().get_total_list()
+    transformed_list = transform_swapi_results(swapi_results)
+    return total_count, transformed_list
+
+def fetch_swapi():
+    total_count, transformed_list = fetch_transformed_swapi_list()
+    
+    file_name = generate_file_name()
+    
+    write_list_to_csv_file(transformed_list, file_name)
+    
+    new_collection = save_collection(file_name, total_count)
+    
     return new_collection
 
 
 # file reading relevant functions
 
 def reading_csv_file(filename):
-# this part can get upgraded with pandas or any other large data framework
+    # this part can get upgraded with pandas or any other large data framework
     data_list = []
     with open(filename, newline='') as csvfile:
         reader = csv.DictReader(csvfile)
