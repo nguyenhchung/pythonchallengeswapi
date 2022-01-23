@@ -37,7 +37,7 @@ def transform_swapi_row(input_row, homeworld_dict={}):
     transformed_row['date'] = iso8601_str_to_date(input_row['edited'])
     transformed_row['homeworld'] = transform_homeworld_field(input_row['homeworld'], homeworld_dict)
         
-    for key_to_drop in swapi_keys_to_drop:
+    for key_to_drop in SWAPI_KEYS_TO_DROP:
         transformed_row.pop(key_to_drop)
     
     return transformed_row
