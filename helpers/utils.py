@@ -152,8 +152,8 @@ def get_collection_count(df, count_fields):
     return df.groupby(count_fields).size()
 
 def retrieve_collection_count_dict(collection, count_fields):
-    df = utils.convert_csv_to_df(collection.filename)
-    count_dict = utils.get_collection_count(df, count_fields).to_dict()
+    df = convert_csv_to_df(collection.filename)
+    count_dict = get_collection_count(df, count_fields).to_dict()
     return count_dict       
     
     
