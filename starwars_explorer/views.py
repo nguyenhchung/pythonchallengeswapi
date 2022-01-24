@@ -25,7 +25,7 @@ def fetch_data(request):
         # fetch logic        
         try:
             fetched_collection = utils.fetch_swapi()
-            response_json = collection_to_json_response(fetch_collection)
+            response_json = utils.collection_to_json_response(fetched_collection)
             return JsonResponse(response_json, status=200)
         except Exception as e:
             return JsonResponse({"error": e}, status=400)

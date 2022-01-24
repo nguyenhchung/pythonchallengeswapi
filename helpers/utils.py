@@ -37,10 +37,9 @@ def transform_swapi_row(input_row, homeworld_dict={}):
     transformed_row['date'] = iso8601_str_to_date(input_row['edited'])
     transformed_row['homeworld'] = transform_homeworld_field(input_row['homeworld'], homeworld_dict)
         
-    for row_key in transformed_row.keys():
-        if row_key not in SWAPI_CSV_HEADER_FIELDS:
-            transformed_row.pop(row_key)
-    
+    for key_to_drop in SWAPI_KEYS_TO_DROP:
+        transformed_row.pop(key_to_drop)
+  
     return transformed_row
     
 def transform_swapi_results(input_list):
@@ -94,7 +93,7 @@ def fetch_swapi():
 def collection_to_json_response(input_collection):
     # improvable by using a proper mapper class, connected to the collection model class
     
-    date_formatted = utils.dt_to_django_template_dt(input_collection.date)
+    date_formatted = dt_to_django_template_dt(input_collection.date)
     response_json = {   "pk": input_collection.pk,
                         "instance": 
                         { 
