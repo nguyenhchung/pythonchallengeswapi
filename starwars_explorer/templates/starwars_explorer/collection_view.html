@@ -4,26 +4,28 @@
 <h2>{{ collection.filename }}</h2>
     {% if file_content %}
     <table class="collection_table">
-    <thead>
-    <tr>
-        {% for header_field in header_fields %}
-            <th><a href="{% url 'starwars_explorer:collection_count_view' collection.id %}?fields={{ header_field }}">{{ header_field }}</a></th>
-        {% endfor %}
-    </tr>
-    </thead>
-    <tbody>
-        {% for file_row in file_content %}
-        <tr>
-            {% for key, value in file_row.items %}
-                <td>{{ value }}</td>
+        <thead>
+            <tr>
+                {% for header_field in header_fields %}
+                    <th><a href="{% url 'starwars_explorer:collection_count_view' collection.id %}?fields={{ header_field }}"
+                        >{{ header_field }}</a></th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for file_row in file_content %}
+            <tr>
+                {% for key, value in file_row.items %}
+                    <td>{{ value }}</td>
+                {% endfor %}
+            </tr>
             {% endfor %}
-        </tr>
-        {% endfor %}
-    </tbody>
+        </tbody>
     </table>
     <button type="button" class="button">
         <a href="{% url 'starwars_explorer:collection_view' collection.id %}?limit={{ next_limit }}"
-        {% if load_more_is_disabled %}class="disabled"{%endif%} >Load More</a>
+        {% if load_more_is_disabled %}class="disabled"{%endif%} 
+        >Load More</a>
     </button>
     {% else %}
         <p>No content found.</p>
