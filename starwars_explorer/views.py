@@ -58,8 +58,8 @@ def collection_count_view(request, collection_id):
         is_last_count_field = False if len(count_fields) > 1 else True
         
         collection = Collection.objects.get(pk=collection_id)
-        count_dict = utils.retrieve_collection_count_dict(collection, count_fields)
-           
+        count_dict = utils.retrieve_collection_count_dict(collection.filename, count_fields)
+
         advanced_header_fields = utils.generate_advanced_swapi_header_fields(count_fields) 
     except Collection.DoesNotExist:
         raise Http404("Collection does not exist")
