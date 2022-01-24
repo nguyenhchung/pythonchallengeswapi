@@ -117,27 +117,28 @@ def reading_csv_file(filename):
 
 
 # count relevant functions
-
+def generate_advanced_header_field(header_field, selected_fields):
+    targets = selected_fields.copy()
+    selected = False
+    disabled = False    
+    if header_field in selected_fields:
+        targets.remove(header_field)
+        selected = True
+        
+        # disable of deselecting last field
+        if len(selected_fields) == 1:
+            disabled = True 
+    else:
+        targets.append(header_field)
+    
+    target_str = ','.join(filter(lambda x: x != "", targets))
+    return {'name': header_field, 'targets': target_str, 'selected': selected, 'disabled': disabled }
+        
 def generate_advanced_header_fields(header_fields, selected_fields):
     advanced_header_fields = []
     
     for header_field in header_fields:
-        targets = selected_fields.copy()
-        selected = False
-        disabled = False    
-        if header_field in selected_fields:
-            targets.remove(header_field)
-            selected = True
-            
-            # disable of deselecting last field
-            if len(selected_fields) == 1:
-                disabled = True 
-        else:
-            targets.append(header_field)
-        
-        target_str = ','.join(filter(lambda x: x != "", targets))
-        
-        advanced_header_fields.append({'name': header_field, 'targets': target_str, 'selected': selected, 'disabled': disabled })
+        advanced_header_fields.append(generate_advanced_header_field(header_field, selected_fields))
         
     return advanced_header_fields
 
