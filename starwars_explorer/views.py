@@ -23,27 +23,14 @@ def fetch_data(request):
     if request.is_ajax and request.method == "POST":
         
         # fetch logic        
-        is_valid = True
-        errors = None
-        
-        instance = utils.fetch_swapi()
-        
-        date_formatted = utils.dt_to_django_template_dt(instance.date)
-        response_json = {   "pk": instance.pk,
-                            "instance": 
-                            { 
-                                "filename": instance.filename,
-                                "date": date_formatted,
-                                "total_count": instance.total_count 
-                            }
-                        }
-        
-        if is_valid:
+        try:
+            fetched_collection = utils.fetch_swapi()
+            response_json = collection_to_json_response(fetch_collection)
             return JsonResponse(response_json, status=200)
-        else:
-            return JsonResponse({"error": errors}, status=400)
+        except Exception as e:
+            return JsonResponse({"error": e}, status=400)
 
-    return JsonResponse({"error": "Unknown error"}, status=400)
+    return JsonResponse({"error": "Unknown error"}, status=500)
 
     
 def collection_view(request, collection_id):
@@ -56,13 +43,13 @@ def collection_view(request, collection_id):
             raise EmptyCollection
         
         next_limit = result_limit + DEFAULT_OFFSET
-        load_more_disabled = True if result_limit >= collection.total_count else False  
+        load_more_is_disabled = True if result_limit >= collection.total_count else False  
     except Collection.DoesNotExist:
         raise Http404("Collection does not exist")
     except EmptyCollection:
         raise Http404("Empty collection")
     
-    return render(request, 'starwars_explorer/collection_view.html', {'collection': collection, 'header_fields': SWAPI_CSV_HEADER_FIELDS, 'file_content': file_content, 'next_limit': str(next_limit), 'load_more_disabled': load_more_disabled})
+    return render(request, 'starwars_explorer/collection_view.html', {'collection': collection, 'header_fields': SWAPI_CSV_HEADER_FIELDS, 'file_content': file_content, 'next_limit': str(next_limit), 'load_more_is_disabled': load_more_is_disabled})
 
 
 def collection_count_view(request, collection_id):
@@ -71,11 +58,9 @@ def collection_count_view(request, collection_id):
         is_last_count_field = False if len(count_fields) > 1 else True
         
         collection = Collection.objects.get(pk=collection_id)
-
-        df = utils.convert_csv_to_df(collection.filename)
-        count_dict = utils.get_collection_count(df, count_fields).to_dict()
+        count_dict = utils.retrieve_collection_count_dict(collection, count_fields).to_dict()
            
-        advanced_header_fields = utils.generate_advanced_header_fields(SWAPI_CSV_HEADER_FIELDS, count_fields) 
+        advanced_header_fields = utils.generate_advanced_swapi_header_fields(count_fields) 
     except Collection.DoesNotExist:
         raise Http404("Collection does not exist")
     return render(request, 'starwars_explorer/collection_count_view.html', {'collection': collection, 'advanced_header_fields': advanced_header_fields, 'count_fields': count_fields, 'count_dict':count_dict, 'is_last_count_field':is_last_count_field})

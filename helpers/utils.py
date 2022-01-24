@@ -86,11 +86,24 @@ def fetch_swapi():
     file_name = generate_file_name()
     
     write_list_to_csv_file(transformed_list, file_name)
-    
+
     new_collection = save_collection(file_name, total_count)
-    
     return new_collection
 
+
+def collection_to_json_response(input_collection):
+    # improvable by using a proper mapper class, connected to the collection model class
+    
+    date_formatted = utils.dt_to_django_template_dt(input_collection.date)
+    response_json = {   "pk": input_collection.pk,
+                        "instance": 
+                        { 
+                            "filename": input_collection.filename,
+                            "date": date_formatted,
+                            "total_count": input_collection.total_count 
+                        }
+                    }
+    return response_json
 
 # file reading relevant functions
 
@@ -128,8 +141,19 @@ def generate_advanced_header_fields(header_fields, selected_fields):
         
     return advanced_header_fields
 
+def generate_advanced_swapi_header_fields(selected_fields):
+    return generate_advanced_header_fields(SWAPI_CSV_HEADER_FIELDS, selected_fields)
+ 
+
 def convert_csv_to_df(filename):
     return pd.read_csv(filename, engine='python')
     
 def get_collection_count(df, count_fields):
     return df.groupby(count_fields).size()
+
+def retrieve_collection_count_dict(collection, count_fields):
+    df = utils.convert_csv_to_df(collection.filename)
+    count_dict = utils.get_collection_count(df, count_fields).to_dict()
+    return count_dict       
+    
+    

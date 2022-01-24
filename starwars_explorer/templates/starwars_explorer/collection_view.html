@@ -23,7 +23,7 @@
     </table>
     <button type="button" class="button">
         <a href="{% url 'starwars_explorer:collection_view' collection.id %}?limit={{ next_limit }}"
-        {% if load_more_disabled %}class="disabled"{%endif%} >Load More</a>
+        {% if load_more_is_disabled %}class="disabled"{%endif%} >Load More</a>
     </button>
     {% else %}
         <p>No content found.</p>
